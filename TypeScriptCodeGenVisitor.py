@@ -1,21 +1,26 @@
-from ASRParser import ASRParser
-from ASRListener import ASRListener
-from antlr4 import ParseTreeWalker
 
-class TypeScriptCodeGenVisitor(ASRListener):
+from ASRParser import ASRParser
+from ASRVisitor import ASRVisitor
+from antlr4 import ParseTreeVisitor
+
+class TypeScriptCodeGenVisitor(ParseTreeVisitor):
     def __init__(self):
         self.code_lines = []
 
-    def enterParam(self, ctx):
+    def visitR(self, ctx):
+        # Visit all param children
+        for param_ctx in ctx.param():
+            self.visit(param_ctx)
+        return '\n'.join(self.code_lines)
+
+    def visitParam(self, ctx):
         param_id = ctx.ID().getText() if ctx.ID() else None
         param_value = ctx.DEFAULTVALUE().getText() if ctx.DEFAULTVALUE() else None
         # Remove quotes if it's a string
         if param_value and param_value.startswith('"') and param_value.endswith('"'):
             param_value = param_value[1:-1]
             param_value = f'"{param_value}"'  # keep as TypeScript string literal
-        # TypeScript: let <id>: any = <value>; console.log(`<id>: ${<id>}`);
         self.code_lines.append(f"let {param_id}: any = {param_value};\nconsole.log(`{param_id}: ${{{param_id}}}`);")
-
     def get_code(self):
         return '\n'.join(self.code_lines)
 
@@ -34,7 +39,6 @@ if __name__ == "__main__":
     parser = ASRParser(token_stream)
     tree = parser.r()
     visitor = TypeScriptCodeGenVisitor()
-    walker = ParseTreeWalker()
-    walker.walk(visitor, tree)
+    visitor.visit(tree)
     code = visitor.get_code()
     print(code)

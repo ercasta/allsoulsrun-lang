@@ -13,13 +13,14 @@ def main():
     input_file = sys.argv[1]
     input_stream = FileStream(input_file)
     lexer = ASRLexer(input_stream)
+    
     token_stream = CommonTokenStream(lexer)
     parser = ASRParser(token_stream)
     tree = parser.r()
     visitor = TypeScriptCodeGenVisitor()
-    walker = ParseTreeWalker()
-    walker.walk(visitor, tree)
+    visitor.visit(tree)
     code = visitor.get_code()
+
     # Write to engine/src/<input_file>.ts
     import os
     out_dir = os.path.join(os.path.dirname(__file__), 'engine', 'src')
