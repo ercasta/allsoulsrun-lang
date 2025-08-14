@@ -3,6 +3,6 @@ param pluto 3.14
 
 entity composite {
     field1 int
-    field2 string default "emt"
+    field2 string "emt"
     field3 float 
 }

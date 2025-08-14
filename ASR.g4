@@ -1,17 +1,37 @@
 grammar ASR;		
 fragment DIGIT : [0-9] ;
-fragment FLOAT         : DIGIT+ '.' DIGIT+ ;
-fragment INTEGER : DIGIT+;
-fragment STRING : '"' ([a-zA-Z])+ '"';
+FLOAT         : DIGIT+ '.' DIGIT+ ;
+INTEGER : DIGIT+;
+STRING : '"' ([a-zA-Z])+ '"';
+BOOL : BOOLT | BOOLF;
+BOOLT : 'true';
+BOOLF : 'false';
 
 // Keywords
 PARAMKW : 'param';
 ENTITYKW : 'entity'; 
-TYPE : 'int'|'float'|'string'|'id';
-r  : param* entity* EOF;
-param: PARAMKW ID DEFAULTVALUE NEWLINE+;         // match keyword hello followed by an identifier
+TYPE : 'int'|'float'|'string'|'bool'|'id';
+
+ASSIGN : '=';
+EQ : '==';
+LT : '<=';
+DOT: '.';
+LSQUARE: '[';
+RSQUARE: ']';
+variable: ID;
+arrayaccess: LSQUARE (INTEGER|variable) RSQUARE;
+componentfield: variable DOT ID DOT ID;
+valueholder: (variable | componentfield) (arrayaccess)?;
+literal : FLOAT | INTEGER | STRING | BOOL;
+lexpr: valueholder;
+rexpr: valueholder | literal;
+assignexpr: lexpr ASSIGN rexpr;
+expr: assignexpr NEWLINE*;
+r  : param* entity* expr* EOF;
+param: PARAMKW ID (literal)? NEWLINE+;         // match keyword hello followed by an identifier
 entity: ENTITYKW ID '{' NEWLINE* entityfield* NEWLINE* '}' NEWLINE*;
-entityfield: ID TYPE ('default' DEFAULTVALUE)? NEWLINE+;
+entityfield: ID TYPE (literal)? NEWLINE+;
+
 DEFAULTVALUE: FLOAT 
 | INTEGER 
 | STRING;
