@@ -1,0 +1,2 @@
+antlr4-parse ASR.g4 r -tokens sample_entity.lang
+antlr4 -Dlanguage=Python3 -visitor -no-listener ASR.g4

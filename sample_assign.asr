@@ -6,3 +6,8 @@ component hero {
     name string "Brutus"
     ratio float 
 }
+
+newvar = 27
+mystr = "laccio"
+arr[9] = "pluto"
+arr[newvar] = 9.18

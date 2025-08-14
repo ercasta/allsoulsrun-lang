@@ -9,7 +9,7 @@ BOOLF : 'false';
 
 // Keywords
 PARAMKW : 'param';
-ENTITYKW : 'entity'; 
+COMPONENTKW : 'component'; 
 TYPE : 'int'|'float'|'string'|'bool'|'id';
 
 ASSIGN : '=';
@@ -27,10 +27,10 @@ lexpr: valueholder;
 rexpr: valueholder | literal;
 assignexpr: lexpr ASSIGN rexpr;
 expr: assignexpr NEWLINE*;
-r  : param* entity* expr* EOF;
 param: PARAMKW ID (literal)? NEWLINE+;         // match keyword hello followed by an identifier
-entity: ENTITYKW ID '{' NEWLINE* entityfield* NEWLINE* '}' NEWLINE*;
-entityfield: ID TYPE (literal)? NEWLINE+;
+component: COMPONENTKW ID '{' NEWLINE* componentfielddecl* NEWLINE* '}' NEWLINE*;
+componentfielddecl: ID TYPE (literal)? NEWLINE+;
+r  : param* component* expr* EOF;
 
 DEFAULTVALUE: FLOAT 
 | INTEGER 
